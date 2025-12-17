@@ -14,8 +14,7 @@ npm run dev
 
 ```
 cd backend/
-mvn clean install
-mvn quarkus:dev
+node server.js
 ```
 
 ## ESP32
