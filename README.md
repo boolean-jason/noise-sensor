@@ -1,5 +1,26 @@
 # healthmap-noisesensor
 
+Noise monitoring system using an ESP32 (I2S mic + OLED), a Node/Express backend with PostgreSQL storage, and a React (Vite) dashboard.
+
+## Architecture
+
+- ESP32 reads microphone audio → calculates dB(A) → sends JSON to backend (POST /api/noise-data)
+
+- Backend (Node/Express) stores readings in PostgreSQL and exposes API endpoints for the dashboard
+
+- Frontend (React/Vite) displays live and historical charts by fetching data from the backend
+
+## Requirements
+
+- Node.js (LTS recommended)
+
+- PostgreSQL (local via pgAdmin/Postgres install)
+
+- ESP32 + I2S microphone (e.g., SPH0645) + SSD1306 OLED
+
+- Arduino IDE or PlatformIO
+
+
 ## Frontend
 
 Do ```Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned```
