@@ -577,7 +577,7 @@ export default function Dashboard() {
               >
                 {devices.map((d) => (
                   <option key={d.device_id} value={d.device_id}>
-                    {d.device_id} — {d.label}
+                    {d.device_id} - {d.label}
                   </option>
                 ))}
               </select>
