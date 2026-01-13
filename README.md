@@ -210,6 +210,18 @@ This project supports multiple ESP32 noise sensors without changing backend or f
 
 To add a new device, follow these steps:
 
+```
+Update the ESP32 code
+
+In the ESP32 firmware, set a unique device ID.
+Each ESP32 must have its own DEVICE_ID.
+
+Example:
+const char* DEVICE_ID = "ESP32_003";
+```
+
+The backend automatically accepts new device IDs, no changes are required there.
+
 ---
 
 ## Notes
