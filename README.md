@@ -86,6 +86,20 @@ Table: `noise_readings`
 - `dba_instant` (DECIMAL)
 - `timestamp` (TIMESTAMP, auto-generated)
 
+Table: `devices`
+
+- `device_id` (VARCHAR, primary key)
+- `label` (TEXT)
+- `address` (TEXT)
+- `latitude` (DOUBLE PRECISION, GPS latitude)
+- `longitude` (DOUBLE PRECISION, GPS longitude)
+- `created_at` (TIMESTAMP, auto-generated)
+
+## Relationship
+
+- `noise_readings.device_id` references `devices.device_id`
+- One device can have many noise readings
+
 ---
 
 ## Backend API Endpoints
@@ -144,7 +158,7 @@ on network: npm run dev -- --host 0.0.0.0 --port 5173
 Frontend runs at:
 
 `http://localhost:5173`
-`http://<PC_IP>:5173`
+`http://<IP>:5173`
 
 ### Backend URL config
 
