@@ -28,7 +28,9 @@ The system continuously measures environmental noise in dB(A), stores the measur
 
 Data flow:
 
-ESP32 → Backend API → PostgreSQL  Frontend Dashboard → Backend API → PostgreSQL
+ESP32 → Backend API → PostgreSQL
+<br>
+Frontend Dashboard → Backend API → PostgreSQL
 
 ---
 
