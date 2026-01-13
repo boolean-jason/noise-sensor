@@ -2,7 +2,7 @@
 
 Noise monitoring system using an ESP32 (I2S microphone + OLED), a Node/Express backend with PostgreSQL storage, and a React (Vite) dashboard.
 
-The system continuously measures environmental noise in dB(A), stores the data in a database, and visualizes both live and historical noise levels in a web dashboard.
+The system continuously measures environmental noise in dB(A), stores the measurements in a database, and visualizes both live and historical noise levels in a web dashboard.
 
 ---
 
@@ -28,7 +28,8 @@ The system continuously measures environmental noise in dB(A), stores the data i
 
 Data flow:
 
-ESP32 → Backend API → PostgreSQL → Backend API → Frontend Dashboard
+ESP32 → Backend API → PostgreSQL 
+Frontend Dashboard → Backend API → PostgreSQL
 
 ---
 
@@ -151,8 +152,13 @@ Example:
 ```bash
 cd frontend/
 npm install
-on localhost: npm run dev
-on network: npm run dev -- --host 0.0.0.0 --port 5173
+
+#run locally
+npm run dev
+
+
+# run on local network
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
 Frontend runs at:
