@@ -1,4 +1,3 @@
-// src/Dashboard.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ResponsiveContainer,
@@ -44,7 +43,7 @@ const PRESETS: { value: Preset; label: string }[] = [
   { value: "day", label: "Single day (24h)" },
 ];
 
-// ---- Themes (oude dashboard look) ----
+// ---- Themes ----
 const THEMES = {
   light: {
     name: "light" as const,
