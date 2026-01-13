@@ -223,27 +223,21 @@ const char* DEVICE_ID = "ESP32_003";
 
 The backend automatically accepts new device IDs, no changes are required there.
 
-```
 2. Upload the ESP32 firmware
   - Update WiFi credentials if needed
   - Upload the code to the ESP32
   - Power the device
-```
 
 The ESP32 will immediately start sending noise measurements to the backend.
 
-```
 3. Register the device location in the database
 
 To make the new device visible in the frontend (map and selector), add it to the devices table in PostgreSQL.
 
 Example SQL query:
 ```sql
-To make the new device visible in the frontend (map and selector), add it to the devices table in PostgreSQL.
-
-Example SQL query:
-```
-
+INSERT INTO devices (device_id, label, address, latitude, longitude)
+VALUES ('ESP32_003', 'Paris', 'Rue de Rivoli, Paris, France', 48.856613, 2.352222);
 ```
 
 ---
