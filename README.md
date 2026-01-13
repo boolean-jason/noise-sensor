@@ -157,7 +157,6 @@ npm install
 #run locally
 npm run dev
 
-
 # run on local network
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
