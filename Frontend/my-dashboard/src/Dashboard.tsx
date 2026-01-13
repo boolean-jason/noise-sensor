@@ -354,9 +354,9 @@ export default function Dashboard() {
           <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: 16 }}>
             {/* Logo card */}
             <div style={{ ...cardStyle, padding: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 800, opacity: 0.8, marginBottom: 10 }}>
+              {/* <div style={{ fontSize: 12, fontWeight: 800, opacity: 0.8, marginBottom: 10 }}>
                 Innovation in Medicine
-              </div>
+              </div> */}
               <div
                 style={{
                   width: "100%",
@@ -376,7 +376,7 @@ export default function Dashboard() {
                   style={{ width: "100%", height: "100%", objectFit: "contain" }}
                 />
               </div>
-
+              <center>
               <div style={{ marginTop: 10, fontSize: 12, opacity: 0.8 }}>
                 Selected sensor:
                 <div style={{ marginTop: 4, fontWeight: 800, opacity: 0.95 }}>
@@ -384,6 +384,7 @@ export default function Dashboard() {
                   {selectedDevice?.label ? `(${selectedDevice.label})` : ""}
                 </div>
               </div>
+              </center>
             </div>
 
             {/* Info card */}
