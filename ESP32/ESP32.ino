@@ -14,7 +14,7 @@ const char* WIFI_SSID = "YOUR-WIFI-NAME";
 const char* WIFI_PASS = "YOUR-WIFI-PASSW"; 
 
 // =================== Backend API ===================
-const char* BACKEND_URL = "http://192.168.0.240:8080/api/noise-data";
+const char* BACKEND_URL = "http://noise-sensor-alb-899662008.eu-central-1.elb.amazonaws.com/api/noise-data";
 const char* DEVICE_ID   = "ESP32_003";
 
 // =================== OLED (SSD1306) ===================
