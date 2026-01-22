@@ -15,7 +15,7 @@ const char* WIFI_PASS = "sGtyn6ZJmtzybPsX";
 
 // =================== Backend API ===================
 const char* BACKEND_URL = "http://192.168.0.240:8080/api/noise-data";
-const char* DEVICE_ID   = "ESP32_001";
+const char* DEVICE_ID   = "ESP32_003";
 
 // =================== OLED (SSD1306) ===================
 #define SCREEN_WIDTH 128
@@ -72,7 +72,7 @@ static const i2s_pin_config_t pin_config = {
 
 #define BLOCK_SAMPLES 1024
 static const float NORM_DIV = 131072.0f;
-static float CAL_OFFSET_DBA = 120.0f;
+static float CAL_OFFSET_DBA = 96.0f;
 static const float EPS_F = 1e-12f;
 
 // Simple HPF
