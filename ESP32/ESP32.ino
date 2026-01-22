@@ -10,11 +10,17 @@
 #include <HTTPClient.h>
 
 // =================== WiFi ===================
-const char* WIFI_SSID = "YOUR-WIFI-NAME";
-const char* WIFI_PASS = "YOUR-WIFI-PASSW"; 
+const char* WIFI_SSID = "Vodafone-25DC";
+const char* WIFI_PASS = "sGtyn6ZJmtzybPsX"; 
 
 // =================== Backend API ===================
+
+// AWS
 const char* BACKEND_URL = "http://noise-sensor-alb-899662008.eu-central-1.elb.amazonaws.com/api/noise-data";
+
+//// Locally
+//const char* BACKEND_URL = "http://192.168.0.240:8080/api/noise-data";
+
 const char* DEVICE_ID   = "ESP32_003";
 
 // =================== OLED (SSD1306) ===================
@@ -26,8 +32,8 @@ const char* DEVICE_ID   = "ESP32_003";
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Graph settings
-const float DB_MIN = 35.0;
-const float DB_MAX = 85.0;
+const float DB_MIN = 20.0;
+const float DB_MAX = 80.0;
 const uint8_t GRAPH_X = 0;
 const uint8_t GRAPH_Y = 22;
 const uint8_t GRAPH_W = 128;
