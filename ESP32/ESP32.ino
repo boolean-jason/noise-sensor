@@ -10,8 +10,8 @@
 #include <HTTPClient.h>
 
 // =================== WiFi ===================
-const char* WIFI_SSID = "Vodafone-25DC";
-const char* WIFI_PASS = "sGtyn6ZJmtzybPsX"; 
+const char* WIFI_SSID = "WiFi_Name";
+const char* WIFI_PASS = "WiFi_Passw"; 
 
 // =================== Backend API ===================
 
