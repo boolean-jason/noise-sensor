@@ -581,9 +581,9 @@ export default function Dashboard() {
                       <div style={{ fontSize: 12 }}>{d.label}</div>
                       {d.address && <div style={{ fontSize: 12, marginTop: 4 }}>{d.address}</div>}
                       <div style={{ fontSize: 11, opacity: 0.75, marginTop: 6 }}>
-                        Lat: {d.latitude.toFixed(6)}<br />
-                        Lon: {d.longitude.toFixed(6)}
-                      </div>
+                        Lat: {typeof d.latitude === "number" ? d.latitude.toFixed(6) : "—"}<br />
+			Lon: {typeof d.longitude === "number" ? d.longitude.toFixed(6) : "—"}
+			</div>
                     </Popup>
                   </Marker>
                 ))}
