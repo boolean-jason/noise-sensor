@@ -136,6 +136,17 @@ export default function Dashboard() {
     () => devices.find((d) => d.device_id === selectedDeviceId),
     [devices, selectedDeviceId]
   );
+  // Leaflet-safe devices (prevents Invalid LatLng crash)
+const validDevices = useMemo(
+  () =>
+    devices.filter(
+      (d) =>
+        typeof d.latitude === "number" &&
+        typeof d.longitude === "number"
+    ),
+  [devices]
+);
+
 
   useEffect(() => {
     const fetchDevices = async () => {
@@ -308,9 +319,18 @@ export default function Dashboard() {
   }, [preset, selectedDate]);
 
   const mapCenter: [number, number] = useMemo(() => {
-    if (selectedDevice) return [selectedDevice.latitude, selectedDevice.longitude];
-    return [51.0, 10.0];
-  }, [selectedDevice]);
+  if (
+    selectedDevice &&
+    typeof selectedDevice.latitude === "number" &&
+    typeof selectedDevice.longitude === "number"
+  ) {
+    return [selectedDevice.latitude, selectedDevice.longitude];
+  }
+
+  // Safe fallback: center of Europe
+  return [51.0, 10.0];
+}, [selectedDevice]);
+
 
   return (
     <div
@@ -567,7 +587,7 @@ export default function Dashboard() {
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {devices.map((d) => (
+                {validDevices.map((d) => (
                   <Marker
                     key={d.device_id}
                     position={[d.latitude, d.longitude]}
