@@ -18,7 +18,7 @@ import "leaflet/dist/leaflet.css";
 import Logo from "./assets/logo.png";
 
 // ---- Backend ----
-const BACKEND_URL = import.meta.env.VITE_API_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 console.log("BACKEND_URL =", BACKEND_URL);
 
 
