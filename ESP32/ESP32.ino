@@ -21,7 +21,8 @@ const char* BACKEND_URL = "http://noise-sensor-alb-899662008.eu-central-1.elb.am
 //// Locally
 //const char* BACKEND_URL = "http://192.168.0.240:8080/api/noise-data";
 
-const char* DEVICE_ID   = "ESP32_003";
+// Replace the "xxx" with an 3 number ID that is available
+const char* DEVICE_ID   = "ESP32_xxx";
 
 // =================== OLED (SSD1306) ===================
 #define SCREEN_WIDTH 128
