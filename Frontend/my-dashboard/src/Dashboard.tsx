@@ -178,15 +178,21 @@ console.log("Devices (valid):", validDevices);
         if (!res.ok) throw new Error("HTTP " + res.status);
         
 	const raw: any[] = await res.json();
+	console.log("FIRST DEVICE RAW:", raw[0]);
+
 
 	const parsed: Device[] = raw.map((d) => ({
-  ...d,
-  	latitude: Number(d.latitude),
-  	longitude: Number(d.longitude),
+  	device_id: d.device_id,
+  	label: d.label,
+  	address: d.address,
+  	latitude: Number(d.lat),
+  	longitude: Number(d.lng),
+  	created_at: d.created_at,
 }));
-
-setDevices(parsed);
-console.log("Parsed devices:", parsed);
+	console.log("Parsed device example:", parsed[0]);
+	
+	setDevices(parsed);
+	
 
         if (!selectedDeviceId && parsed.length > 0) 
 		setSelectedDeviceId(parsed[0].device_id);
