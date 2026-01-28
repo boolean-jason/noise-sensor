@@ -153,12 +153,15 @@ export default function Dashboard() {
     [devices, selectedDeviceId]
   );
   // Leaflet-safe devices (prevents Invalid LatLng crash)
-const validDevices = useMemo(
+  
+  const validDevices = useMemo(
   () =>
     devices.filter(
       (d) =>
         typeof d.latitude === "number" &&
-        typeof d.longitude === "number"
+        typeof d.longitude === "number" &&
+	!Number.isNaN(d.latitude) &&
+        !Number.isNaN(d.longitude)
     ),
   [devices]
 );
@@ -181,7 +184,8 @@ const validDevices = useMemo(
 setDevices(parsed);
 console.log("Parsed devices:", parsed);
 
-        if (!selectedDeviceId && data.length > 0) setSelectedDeviceId(data[0].device_id);
+        if (!selectedDeviceId && parsed.length > 0) 
+		setSelectedDeviceId(parsed[0].device_id);
       } catch (err) {
         console.error("Could not fetch devices:", err);
       }
@@ -347,15 +351,19 @@ console.log("Parsed devices:", parsed);
   const mapCenter: [number, number] = useMemo(() => {
   if (
     selectedDevice &&
-    typeof selectedDevice.latitude === "number" &&
-    typeof selectedDevice.longitude === "number"
+    Number.isFinite(selectedDevice.latitude) &&
+    Number.isFinite(selectedDevice.longitude)
   ) {
     return [selectedDevice.latitude, selectedDevice.longitude];
   }
 
-  // Safe fallback: center of Europe
-  return [51.0, 10.0];
-}, [selectedDevice]);
+  if (validDevices.length > 0) {
+    return [validDevices[0].latitude, validDevices[0].longitude];
+  }
+
+  return [51.0, 10.0]; // fallback Germany
+}, [selectedDevice, validDevices]);
+
 
 
   return (
@@ -602,7 +610,7 @@ console.log("Parsed devices:", parsed);
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div style={{ fontSize: 14, fontWeight: 800, opacity: 0.95 }}>Map (select a sensor)</div>
               <div style={{ fontSize: 12, opacity: 0.75 }}>
-                Devices: <b>{devices.length}</b>
+                Devices: <b>{validDevices.length}</b>
               </div>
             </div>
 
