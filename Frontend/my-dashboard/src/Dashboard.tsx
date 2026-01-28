@@ -201,11 +201,6 @@ console.log("Devices (valid):", validDevices);
       }
     };
 
-    fetchDevices();
-    const id = setInterval(fetchDevices, 60_000);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // ---------- Live ----------
   const LIVE_WINDOW_MS = 20_000; // laatste 20 seconden

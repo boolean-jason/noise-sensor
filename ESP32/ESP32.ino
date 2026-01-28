@@ -9,15 +9,22 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-// =================== WiFi ===================
-const char* WIFI_SSID = "Vodafone-25DC";
-const char* WIFI_PASS = "sGtyn6ZJmtzybPsX"; 
+// WiFi
+const char* WIFI_SSID = "WiFi_Name";
+const char* WIFI_PASS = "WiFi_Passw"; 
 
-// =================== Backend API ===================
-const char* BACKEND_URL = "http://192.168.0.240:8080/api/noise-data";
-const char* DEVICE_ID   = "ESP32_001";
+// Backend API 
 
-// =================== OLED (SSD1306) ===================
+// AWS
+const char* BACKEND_URL = "http://noise-sensor-alb-899662008.eu-central-1.elb.amazonaws.com/api/noise-data";
+
+//// Locally
+//const char* BACKEND_URL = "http://YOUR_IP:8080/api/noise-data";
+
+// Replace the "xxx" with an 3 number ID that is available
+const char* DEVICE_ID   = "ESP32_xxx";
+
+// OLED (SSD1306)
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
@@ -26,8 +33,8 @@ const char* DEVICE_ID   = "ESP32_001";
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Graph settings
-const float DB_MIN = 35.0;
-const float DB_MAX = 85.0;
+const float DB_MIN = 20.0;
+const float DB_MAX = 80.0;
 const uint8_t GRAPH_X = 0;
 const uint8_t GRAPH_Y = 22;
 const uint8_t GRAPH_W = 128;
@@ -41,7 +48,7 @@ float currentDb = 50.0;
 const unsigned long SAMPLE_EVERY_MS = 120;
 unsigned long lastDisplayMs = 0;
 
-// =================== MIC (SPH0645) via I2S ===================
+// MIC (SPH0645) via I2S
 #define I2S_WS 5
 #define I2S_SCK 16
 #define I2S_SD 17
@@ -72,7 +79,7 @@ static const i2s_pin_config_t pin_config = {
 
 #define BLOCK_SAMPLES 1024
 static const float NORM_DIV = 131072.0f;
-static float CAL_OFFSET_DBA = 120.0f;
+static float CAL_OFFSET_DBA = 96.0f;
 static const float EPS_F = 1e-12f;
 
 // Simple HPF
@@ -94,10 +101,10 @@ double sumsq_1s = 0.0;
 uint32_t samples_1s = 0;
 uint32_t t1_start_ms = 0;
 
-// =================== FreeRTOS queue for sending ===================
+// FreeRTOS queue for sending
 static QueueHandle_t sendQueue;
 
-// ======== Helpers for graph ========
+// Helpers for graph
 float clampf(float v, float lo, float hi) {
   if (v < lo) return lo;
   if (v > hi) return hi;
@@ -155,12 +162,12 @@ void drawHeader() {
   display.print(label);
 }
 
-// =================== Network task (runs separately) ===================
+// Network task (runs separately)
 bool postToBackend(float dba) {
   if (WiFi.status() != WL_CONNECTED) return false;
 
   HTTPClient http;
-  http.setTimeout(800); // mag best iets langer; blokkeert alleen de send-task
+  http.setTimeout(800);
 
   http.begin(BACKEND_URL);
   http.addHeader("Content-Type", "application/json");
@@ -187,19 +194,18 @@ void sendTask(void* param) {
   const unsigned long BACKOFF_MAX = 30000;
 
   for (;;) {
-    // Wacht op nieuw punt uit de queue (blokkeert hier, dat is prima)
+    // Wait for new point in the queue
     if (xQueueReceive(sendQueue, &dba, portMAX_DELAY) == pdTRUE) {
       bool ok = postToBackend(dba);
 
       if (!ok) {
-        // backoff bij backend down
+        // backoff when backend is down
         vTaskDelay(pdMS_TO_TICKS(backoffMs));
         backoffMs = min(backoffMs * 2, BACKOFF_MAX);
       } else {
         backoffMs = 1000;
       }
-
-      // Als er veel punten in queue zitten, pak alleen de nieuwste (dropping old)
+      // If there are too many points in queue, get only the newest while dropping the old points
       while (uxQueueMessagesWaiting(sendQueue) > 1) {
         xQueueReceive(sendQueue, &dba, 0);
       }
@@ -207,7 +213,7 @@ void sendTask(void* param) {
   }
 }
 
-// =================== Setup helpers ===================
+// Setup helpers
 void initializeSerial() {
   Serial.begin(115200);
   delay(200);
@@ -263,7 +269,7 @@ void initializeRingBuffer() {
   t1_start_ms = millis();
 }
 
-// =================== Loop helpers ===================
+// Loop helpers
 bool readI2SAudioData(size_t& bytes_read, size_t& num_samples) {
   if (i2s_read(I2S_PORT, (void*)rx_buf, sizeof(rx_buf), &bytes_read, portMAX_DELAY) != ESP_OK) {
     return false;
@@ -313,7 +319,7 @@ void processDisplayUpdate(unsigned long now) {
   }
 }
 
-// =================== SETUP ===================
+// SETUP
 void setup() {
   initializeSerial();
 
@@ -339,7 +345,7 @@ void setup() {
   Serial.println("Setup complete.");
 }
 
-// =================== LOOP ===================
+// LOOP
 void loop() {
   size_t bytes_read = 0;
   size_t num_samples = 0;

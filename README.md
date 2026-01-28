@@ -190,7 +190,8 @@ const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
 ### Backend URL and device ID
 
 ```cpp
-const char* BACKEND_URL = "http://192.168.0.240:8080/api/noise-data";
+- get <YOUR_IP> by doing "ipconfig" in terminal to get IPv4 Address, paste this addres in <YOUR_IP>
+const char* BACKEND_URL = "http://<YOUR_IP>:8080/api/noise-data";
 const char* DEVICE_ID = "ESP32_001";
 ```
 
