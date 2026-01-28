@@ -166,6 +166,10 @@ export default function Dashboard() {
   [devices]
 );
 
+console.log("Devices (raw):", devices);
+console.log("Devices (valid):", validDevices);
+
+
 
   useEffect(() => {
     const fetchDevices = async () => {
