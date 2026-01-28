@@ -169,8 +169,18 @@ const validDevices = useMemo(
       try {
         const res = await fetch(`${BACKEND_URL}/api/devices`);
         if (!res.ok) throw new Error("HTTP " + res.status);
-        const data: Device[] = await res.json();
-        setDevices(data);
+        
+	const raw: any[] = await res.json();
+
+	const parsed: Device[] = raw.map((d) => ({
+  ...d,
+  	latitude: Number(d.latitude),
+  	longitude: Number(d.longitude),
+}));
+
+setDevices(parsed);
+console.log("Parsed devices:", parsed);
+
         if (!selectedDeviceId && data.length > 0) setSelectedDeviceId(data[0].device_id);
       } catch (err) {
         console.error("Could not fetch devices:", err);
