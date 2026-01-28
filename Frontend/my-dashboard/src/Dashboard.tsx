@@ -11,7 +11,7 @@ import {
   Area,
 } from "recharts";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -98,6 +98,22 @@ const markerIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
+
+function FitBounds({ devices }: { devices: Device[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (devices.length === 0) return;
+
+    const bounds = L.latLngBounds(
+      devices.map((d) => [d.latitude, d.longitude])
+    );
+
+    map.fitBounds(bounds, { padding: [40, 40] });
+  }, [devices, map]);
+
+  return null;
+}
 
 export default function Dashboard() {
   // ---------- Theme ----------
@@ -582,7 +598,8 @@ const validDevices = useMemo(
 
             <div style={{ height: 260, borderRadius: 12, overflow: "hidden", border: `1px solid ${theme.border}` }}>
               <MapContainer center={mapCenter} zoom={6} style={{ height: "100%", width: "100%" }}>
-                <TileLayer
+              	<FitBounds devices={validDevices} />  
+	      	<TileLayer
                   attribution='&copy; OpenStreetMap contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
