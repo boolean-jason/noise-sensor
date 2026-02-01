@@ -4,55 +4,67 @@ Noise monitoring system using an ESP32 (I2S microphone + OLED), a Node/Express b
 
 The system continuously measures environmental noise in dB(A), stores the measurements in a database, and visualizes both live and historical noise levels in a web dashboard.
 
+This repository contains:
+- ESP32 firmware (noise sensing + OLED visualization)
+- Backend API (data ingestion and storage)
+- Frontend dashboard (visualization and device selection)
+
 ---
 
-## Architecture
+## Architecture Overview
 
-- **ESP32**
-  - Reads audio from an I2S microphone
-  - Calculates instantaneous dB(A)
-  - Displays live values and a small graph on an OLED
-  - Sends one measurement per second to the backend via HTTP (JSON)
+### ESP32
+- Reads raw audio from an I2S MEMS microphone (e.g. SPH0645)
+- Processes audio into instantaneous dB(A) values
+- Displays live values and a small real-time graph on an SSD1306 OLED
+- Sends one measurement per second to the backend via HTTP (JSON)
+- Continues operating locally even if the backend is offline
 
-- **Backend (Node.js / Express)**
-  - Receives measurements from the ESP32
-  - Stores data in a PostgreSQL database
-  - Provides API endpoints for live and historical data
+### Backend (Node.js / Express)
+- Receives measurements from one or more ESP32 devices
+- Stores data in a PostgreSQL database
+- Exposes REST API endpoints for live and historical data
+- Automatically creates required tables on startup
 
-- **Frontend (React / Vite)**
-  - Fetches data from the backend
-  - Shows:
-    - Live noise level (last seconds)
-    - Historical charts (60s, 60m, 24h, 7d, single day)
-  - Automatically switches between day/night thresholds
+### Frontend (React / Vite)
+- Fetches data from the backend API
+- Displays:
+  - Live noise levels (last seconds)
+  - Historical charts (60s, 60m, 24h, 7d, selected day)
+  - Device selector and interactive map
+- Automatically applies day/night noise thresholds
 
-Data flow:
+### Data Flow
 
-ESP32 → Backend API → PostgreSQL
-<br>
+ESP32 → Backend API → PostgreSQL  
 Frontend Dashboard → Backend API → PostgreSQL
 
 ---
 
-## Requirements
+## System Requirements
 
+### Software
 - Node.js (LTS recommended)
 - PostgreSQL (local installation, e.g. via pgAdmin)
-- ESP32 with:
-  - I2S microphone (e.g. SPH0645)
-  - SSD1306 OLED display
 - Arduino IDE or PlatformIO
-- Frontend libraries:
-  - React (Vite)
-  - Leaflet (interactive map for sensor selection)
+- Git
+
+### Hardware
+- ESP32 development board
+- I2S MEMS microphone (e.g. SPH0645)
+- SSD1306 OLED display (I2C)
+
+### Frontend Libraries
+- React (Vite)
+- Leaflet (interactive map)
 
 ---
 
 ## Backend Setup
 
-### Environment variables
+### 1. Environment variables
 
-Create a file:
+Create the file:
 
 `backend/.env`
 
@@ -61,7 +73,11 @@ DB_PASSWORD=your_postgres_password
 PORT=8080
 ```
 
-### Install and run backend
+Make sure PostgreSQL is running and accessible locally.
+
+---
+
+### 2. Install dependencies and start backend
 
 ```bash
 cd backend/
@@ -73,34 +89,30 @@ Backend runs at:
 
 `http://localhost:8080`
 
-The backend automatically:
-- Connects to PostgreSQL
-- Creates the table `noise_readings` if it does not exist
+On startup, the backend will:
+- Connect to PostgreSQL
+- Create required tables if they do not exist
 
 ---
 
 ## Database Schema
 
-Table: `noise_readings`
-
+### Table: `noise_readings`
 - `id` (SERIAL, primary key)
 - `device_id` (VARCHAR)
 - `dba_instant` (DECIMAL)
 - `timestamp` (TIMESTAMP, auto-generated)
 
-Table: `devices`
-
+### Table: `devices`
 - `device_id` (VARCHAR, primary key)
 - `label` (TEXT)
 - `address` (TEXT)
-- `latitude` (DOUBLE PRECISION, GPS latitude)
-- `longitude` (DOUBLE PRECISION, GPS longitude)
+- `latitude` (DOUBLE PRECISION)
+- `longitude` (DOUBLE PRECISION)
 - `created_at` (TIMESTAMP, auto-generated)
 
-## Relationship
-
+### Relationship
 - `noise_readings.device_id` references `devices.device_id`
-- One device can have many noise readings
 
 ---
 
@@ -117,6 +129,8 @@ POST `/api/noise-data`
 }
 ```
 
+---
+
 ### Latest reading
 
 GET `/api/live?device_id=ESP32_001`
@@ -130,21 +144,23 @@ GET `/api/live?device_id=ESP32_001`
 }
 ```
 
-### Historical data (presets)
+---
+
+### Historical data
 
 GET `/api/history`
 
-Presets:
-
-- `preset=60s`  → last 60 seconds (raw values)
-- `preset=60m`  → last 60 minutes (average per minute)
-- `preset=24h`  → last 24 hours (average per hour)
-- `preset=7d`   → last 7 days (average per day)
+Supported presets:
+- `preset=60s`   → last 60 seconds (raw)
+- `preset=60m`   → last 60 minutes (average per minute)
+- `preset=24h`   → last 24 hours (average per hour)
+- `preset=7d`    → last 7 days (average per day)
 - `preset=day&date=YYYY-MM-DD` → selected day (average per hour)
 
 Example:
-
-`/api/history?device_id=ESP32_001&preset=60m`
+```
+/api/history?device_id=ESP32_001&preset=60m
+```
 
 ---
 
@@ -154,7 +170,7 @@ Example:
 cd frontend/
 npm install
 
-#run locally
+# run locally
 npm run dev
 
 # run on local network
@@ -162,11 +178,12 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
 Frontend runs at:
+- `http://localhost:5173`
+- `http://<YOUR_IP>:5173`
 
-`http://localhost:5173`
-`http://<IP>:5173`
+---
 
-### Backend URL config
+### Backend URL configuration
 
 Create:
 
@@ -180,105 +197,59 @@ VITE_BACKEND_URL=http://localhost:8080
 
 ## ESP32 Setup
 
-### WiFi credentials
+### 1. Wi-Fi credentials
+
+Set your Wi-Fi credentials in the ESP32 firmware:
 
 ```cpp
 const char* WIFI_SSID = "YOUR_WIFI_SSID";
 const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
 ```
 
-### Backend URL and device ID
+---
+
+### 2. Backend URL and device ID
+
+Replace `<YOUR_IP>` with the IPv4 address of the machine running the backend.
 
 ```cpp
-- get <YOUR_IP> by doing "ipconfig" in terminal to get IPv4 Address, paste this addres in <YOUR_IP>
 const char* BACKEND_URL = "http://<YOUR_IP>:8080/api/noise-data";
 const char* DEVICE_ID = "ESP32_001";
 ```
 
-### ESP32 behavior
+---
 
-- Sends one measurement per second
-- OLED works independently from the backend
-- If backend is offline:
-  - OLED keeps updating
-  - Network errors do not block the loop
+### 3. Upload firmware
+
+- Connect the ESP32 via USB
+- Select the correct board and port
+- Upload the firmware
+- Power the ESP32
 
 ---
 
-## Adding a new ESP32 device
+## Adding a New ESP32 Device
 
-This project supports multiple ESP32 noise sensors without changing backend or frontend code.
+1. Set a unique device ID in firmware
+2. Upload firmware to ESP32
+3. Register device location in PostgreSQL
 
-To add a new device, follow these steps:
-
-
-1. Update the ESP32 code
-
-In the ESP32 firmware, set a unique device ID.
-Each ESP32 must have its own DEVICE_ID.
-
-Example:
-```cpp
-const char* DEVICE_ID = "ESP32_003";
-```
-
-The backend automatically accepts new device IDs, no changes are required there.
-
-2. Upload the ESP32 firmware
-  - Update WiFi credentials if needed
-  - Upload the code to the ESP32
-  - Power the device
-
-The ESP32 will immediately start sending noise measurements to the backend.
-
-3. Register the device location in the database
-
-To make the new device visible in the frontend (map and selector), add it to the devices table in PostgreSQL.
-
-Example SQL query:
 ```sql
 INSERT INTO devices (device_id, label, address, latitude, longitude)
-VALUES ('ESP32_003', 'Paris', 'Rue de Rivoli, Paris, France', 48.856613, 2.352222);
+VALUES ('ESP32_003', 'Paris', 'Rue de Rivoli, Paris', 48.856613, 2.352222);
 ```
-This step links the device ID to a physical location and is required for:
-- Map visualization
-- Location-based filtering
-- Clear labeling in the dashboard
-
-4. No backend or frontend changes required
-- The backend dynamically stores data from all devices
-- The frontend automatically lists all devices from the database
-
-Once the ESP32 sends data, measurements will appear in:
-- Live charts
-- Historical charts
-- Location-based views
 
 ---
 
 ## Notes
 
-- Historical charts (60m / 24h / 7d / day) show averaged values
 - Live charts show raw per-second data
-- Data retention (e.g. delete data older than 3 months) can be handled in PostgreSQL
-
----
-
-## Deployment (future)
-
-To make the dashboard available outside your local network:
-
-- Frontend: Vercel or Netlify
-- Backend: Render / Railway / Fly.io
-- Database: Neon / Supabase
-
-Before public deployment:
-- Add API key authentication for ESP32
-- Restrict CORS
-- Add rate limiting
+- Historical charts show averaged values
+- OLED works independently from backend availability
+- Data retention should be handled at database level
 
 ---
 
 ## License
 
-Educational and research use.
+Educational and research use only.
